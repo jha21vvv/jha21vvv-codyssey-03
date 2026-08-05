@@ -1,3 +1,8 @@
+import json  # 파일 저장을 위해 필요합니다.
+
+
+
+
 def show_menu():
     """사용자에게 선택지를 보여주는 함수"""
     print("\n" + "="*30)
@@ -23,6 +28,11 @@ X_PATTERN = [
     [0, 1, 0],
     [1, 0, 1]
 ]
+# 여러 패턴을 하나로 묶어서 관리하는 '사전(Dictionary)'입니다.
+PATTERNS = {
+    'CROSS': PLUS_PATTERN,
+    'X': X_PATTERN
+}
 
 def get_user_input():
     print("\n--- 3x3 패턴 입력 (0 또는 1) ---")
@@ -47,6 +57,19 @@ def get_user_input():
                 
     return user_pattern
 
+def save_result_to_json(pattern, result_name, score):
+    """분석 결과를 JSON 파일로 저장합니다."""
+    data = {
+        "user_pattern": pattern,
+        "detected_pattern": result_name,
+        "similarity_score": score
+    }
+    
+    with open("analysis_result.json", "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+    
+    print("\n[시스템] 분석 결과가 'analysis_result.json'에 저장되었습니다!")
+
 def main():
     """프로그램의 전체 흐름을 제어하는 메인 함수"""
     while True:
@@ -59,9 +82,32 @@ def main():
             print("\n--- 입력하신 패턴 확인 ---")
             for row in user_pattern:
                 print(row)
+            # --- Step 6: MAC 연산을 통한 패턴 판정 ---
+            print("\n--- 분석 결과 ---")
             
-            # (여기에 나중에 Step 6: MAC 연산 코드가 들어갈 자리입니다!)
+            best_match = ""
+            highest_score = -1.0
             
+            # PATTERNS 딕셔너리에 저장된 모든 패턴과 비교합니다.
+            for name, standard_pattern in PATTERNS.items():
+                # Step 2에서 만든 mac_2d 함수 사용!
+                score = mac_2d(user_pattern, standard_pattern)
+                print(f"[{name}] 패턴과의 유사도 점수: {score}")
+                
+                # 가장 높은 점수를 받은 패턴을 기억합니다.
+                if score > highest_score:
+                    highest_score = score
+                    best_match = name
+            
+            # 최종 결과 출력
+            if highest_score > 0:
+                print(f"결과: 이 패턴은 '{best_match}'일 확률이 가장 높습니다!")
+                print(f"최종 점수: {highest_score}")
+                
+                # --- Step 7: 결과 저장 호출 ---
+                save_result_to_json(user_pattern, best_match, highest_score)
+            else:
+                print("결과: 일치하는 패턴을 찾을 수 없습니다.")    
         elif choice == '2':
             print("\n[안내] JSON 데이터 분석을 시작합니다. (구현 예정)")
             # 여기에 나중에 Step 6에서 만들 함수를 넣을 거예요.
