@@ -51,15 +51,16 @@ def main():
     """프로그램의 전체 흐름을 제어하는 메인 함수"""
     while True:
         show_menu()
-        choice = get_user_input("원하는 메뉴 번호를 입력하세요: ")
+        choice = input("원하는 메뉴 번호를 입력하세요: ")
         if choice == '1':
-            user_input = input("패턴 이름을 입력하세요 (+, cross, x, X 등): ")
-            normalized = normalize_label(user_input)
+            # [Step 5] 사용자로부터 3x3 패턴 직접 입력받기
+            user_pattern = get_user_input()
             
-            if normalized:
-                print(f"✅ 정규화 성공: '{user_input}' -> '{normalized}'")
-            else:
-                print(f"❌ 알 수 없는 패턴입니다: '{user_input}'")
+            print("\n--- 입력하신 패턴 확인 ---")
+            for row in user_pattern:
+                print(row)
+            
+            # (여기에 나중에 Step 6: MAC 연산 코드가 들어갈 자리입니다!)
             
         elif choice == '2':
             print("\n[안내] JSON 데이터 분석을 시작합니다. (구현 예정)")
