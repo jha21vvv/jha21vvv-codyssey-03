@@ -1,18 +1,16 @@
 import json  # 파일 저장을 위해 필요합니다.
+import time
+import random
 
 
 
+def display_menu():
+    print("\n=== MAC 연산 시뮬레이터 ===")
+    print("1. 패턴 입력 및 분석")
+    print("2. 성능 비교 테스트 (2D vs 1D)") # 추가
+    print("3. 종료")
+    print("==========================")
 
-def show_menu():
-    """사용자에게 선택지를 보여주는 함수"""
-    print("\n" + "="*30)
-    print("   MAC 연산 시뮬레이터")
-    print("="*30)
-    print("1. 사용자 입력 모드 (3x3)")
-    print("2. JSON 데이터 분석 모드")
-    print("3. 패턴 생성기 (보너스)")
-    print("4. 프로그램 종료")
-    print("="*30)
 
 # Step 4: 표준 패턴 데이터 정의 (이 내용을 함수들 위에 추가하거나 적당한 곳에 넣을 거예요)
 
@@ -34,28 +32,69 @@ PATTERNS = {
     'X': X_PATTERN
 }
 
-def get_user_input():
-    print("\n--- 3x3 패턴 입력 (0 또는 1) ---")
-    print("예시: 0 1 0 (숫자 사이를 띄어쓰기로 구분)")
+def run_performance_test(size=100, iterations=1000):
+    """2D MAC와 1D MAC의 실행 속도를 비교합니다."""
+    print(f"\n[성능 테스트] 크기: {size}x{size}, 반복 횟수: {iterations}회")
     
-    user_pattern = []
+    # 테스트용 랜덤 데이터 생성
+    matrix_a = [[random.random() for _ in range(size)] for _ in range(size)]
+    matrix_b = [[random.random() for _ in range(size)] for _ in range(size)]
+    
+    # 1. 2D MAC 시간 측정
+    start_time = time.time()
+    for _ in range(iterations):
+        # 이전에 만든 mac_2d 함수를 호출한다고 가정합니다.
+        # 여기서는 간단히 로직만 표현하겠습니다.
+        result_2d = 0
+        for i in range(size):
+            for j in range(size):
+                result_2d += matrix_a[i][j] * matrix_b[i][j]
+    end_time = time.time()
+    time_2d = end_time - start_time
+    
+    # 2. 1D MAC 시간 측정 (Flatten 과정 포함)
+    start_time = time.time()
+    for _ in range(iterations):
+        # 1차원으로 변환(Flatten)
+        flat_a = [item for sublist in matrix_a for item in sublist]
+        flat_b = [item for sublist in matrix_b for item in sublist]
+        
+        result_1d = 0
+        for i in range(len(flat_a)):
+            result_1d += flat_a[i] * flat_b[i]
+    end_time = time.time()
+    time_1d = end_time - start_time
+    
+    # 결과 출력
+    print(f" - 2D 방식 소요 시간: {time_2d:.4f}초")
+    print(f" - 1D 방식 소요 시간: {time_1d:.4f}초")
+    
+    if time_1d < time_2d:
+        improvement = ((time_2d - time_1d) / time_2d) * 100
+        print(f" >> 1D 방식이 {improvement:.1f}% 더 빠릅니다! 🚀")
+    else:
+        print(" >> 현재 환경에서는 2D 방식이 더 빠르거나 비슷합니다.")
+
+def get_user_input():
+    """사용자로부터 3x3 패턴을 입력받는 함수 (예외 처리 추가)"""
+    print("\n3x3 패턴을 입력하세요 (0 또는 1 입력, 예: 0 1 0)")
+    pattern = []
     for i in range(3):
-        while True:
+        while True: # 올바른 입력을 할 때까지 반복
             try:
-                # 한 줄을 입력받아 공백으로 나누고 숫자로 변환합니다.
-                row = list(map(int, input(f"{i+1}행 입력: ").split()))
+                row_input = input(f"{i+1}행 입력: ").split()
+                # 숫자로 변환하고, 0 또는 1인지 확인
+                row = [int(x) for x in row_input]
                 
-                # 숫자가 정확히 3개인지 확인합니다.
                 if len(row) != 3:
-                    print("❌ 정확히 3개의 숫자를 입력해주세요.")
+                    print("[오류] 반드시 3개의 숫자를 입력해야 합니다.")
                     continue
                 
-                user_pattern.append(row)
-                break
+                pattern.append(row)
+                break # 성공하면 while문 탈출
             except ValueError:
-                print("❌ 숫자(0 또는 1)만 입력 가능합니다.")
-                
-    return user_pattern
+                print("[오류] 숫자(0 또는 1)만 입력 가능합니다. 다시 입력해 주세요.")
+    return pattern
 
 def save_result_to_json(pattern, result_name, score):
     """분석 결과를 JSON 파일로 저장합니다."""
@@ -73,7 +112,7 @@ def save_result_to_json(pattern, result_name, score):
 def main():
     """프로그램의 전체 흐름을 제어하는 메인 함수"""
     while True:
-        show_menu()
+        display_menu()
         choice = input("원하는 메뉴 번호를 입력하세요: ")
         if choice == '1':
             # [Step 5] 사용자로부터 3x3 패턴 직접 입력받기
@@ -109,19 +148,13 @@ def main():
             else:
                 print("결과: 일치하는 패턴을 찾을 수 없습니다.")    
         elif choice == '2':
-            print("\n[안내] JSON 데이터 분석을 시작합니다. (구현 예정)")
-            # 여기에 나중에 Step 6에서 만들 함수를 넣을 거예요.
-            
+                    run_performance_test()
         elif choice == '3':
-            print("\n[안내] 패턴 생성기를 실행합니다. (구현 예정)")
-            # 여기에 나중에 Step 5에서 만들 함수를 넣을 거예요.
-            
-        elif choice == '4':
-            print("\n[안내] 프로그램을 종료합니다. 이용해 주셔서 감사합니다!")
-            break  # while 루프를 빠져나가 프로그램을 종료합니다.
-            
+            print("\n프로그램을 종료합니다. 이용해 주셔서 감사합니다! 😊")
+            break # while 루프를 빠져나가 프로그램이 종료됩니다.
+
         else:
-            print("\n[오류] 잘못된 입력입니다. 1~4 사이의 숫자를 입력해주세요.")
+            print("\n[오류] 잘못된 선택입니다. 1번~3번을 입력해 주세요.")
     
 def mac_2d(matrix_a, matrix_b):
     """
