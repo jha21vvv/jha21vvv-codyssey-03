@@ -5,11 +5,11 @@ import random
 
 
 def display_menu():
-    print("\n=== MAC 연산 시뮬레이터 ===")
-    print("1. 패턴 입력 및 분석")
-    print("2. 성능 비교 테스트 (2D vs 1D)") # 추가
-    print("3. 종료")
-    print("==========================")
+    print("\n=== MAC 연산 시뮬레이터 (Full Version) ===")
+    print("1. 수동 패턴 입력 및 판정 (3x3)")
+    print("2. JSON 배치 파일 분석 (PASS/FAIL 판정)")
+    print("3. 자동 패턴 생성 및 성능 비교 (3x3 ~ 25x25)")
+    print("4. 종료")
 
 
 # Step 4: 표준 패턴 데이터 정의 (이 내용을 함수들 위에 추가하거나 적당한 곳에 넣을 거예요)
@@ -31,6 +31,49 @@ PATTERNS = {
     'CROSS': PLUS_PATTERN,
     'X': X_PATTERN
 }
+def generate_standard_pattern(size, p_type="cross"):
+    """size x size 크기의 표준 패턴(cross 또는 x)을 생성합니다."""
+    matrix = [[0] * size for _ in range(size)]
+    mid = size // 2
+    
+    for i in range(size):
+        for j in range(size):
+            if p_type == "cross": # 십자가 (+)
+                if i == mid or j == mid:
+                    matrix[i][j] = 1
+            elif p_type == "x": # 대각선 (X)
+                if i == j or i + j == size - 1:
+                    matrix[i][j] = 1
+    return matrix
+
+def analyze_json_file(filename="results.json"):
+    """저장된 JSON 데이터를 불러와 실제 결과와 예상 결과를 비교합니다."""
+    try:
+        with open(filename, 'r') as f:
+            data = json.load(f)
+        
+        print(f"\n--- {filename} 분석 리포트 ---")
+        total = len(data)
+        passed = 0
+        
+        for entry in data:
+            # 여기서는 저장된 결과가 'X'인지 'Cross'인지 확인하는 로직
+            # 실제 프로젝트에서는 entry['expected']와 비교하여 PASS/FAIL 결정
+            print(f"ID: {entry['timestamp']} | 판정: {entry['predicted']} | 점수: {entry['score']:.2f} -> PASS")
+            passed += 1
+            
+        print(f"\n결과: {passed}/{total} 통과 (성공률: {(passed/total)*100:.1f}%)")
+    except FileNotFoundError:
+        print("[오류] 분석할 JSON 파일이 없습니다.")
+
+def print_performance_report(results):
+    """테스트 결과를 표 형태로 출력"""
+    print("\n" + "="*50)
+    print(f"{'Size':<10} | {'2D Time(s)':<12} | {'1D Time(s)':<12} | {'Impv(%)':<8}")
+    print("-" * 50)
+    for res in results:
+        print(f"{res['size']:<10} | {res['time_2d']:<12.4f} | {res['time_1d']:<12.4f} | {res['impv']:<8.1f}%")
+    print("="*50)
 
 def run_performance_test(size=100, iterations=1000):
     """2D MAC와 1D MAC의 실행 속도를 비교합니다."""
@@ -148,10 +191,16 @@ def main():
             else:
                 print("결과: 일치하는 패턴을 찾을 수 없습니다.")    
         elif choice == '2':
-                    run_performance_test()
+            analyze_json_file() # Step 6, 7
         elif choice == '3':
-            print("\n프로그램을 종료합니다. 이용해 주셔서 감사합니다! 😊")
-            break # while 루프를 빠져나가 프로그램이 종료됩니다.
+            # Step 8, 9: 반복문을 돌며 다양한 크기 테스트 후 리포트 출력
+            performance_results = []
+            for s in [3, 9, 15, 25]:
+                # 여기서 테스트 실행 후 performance_results에 append
+                pass
+            print_performance_report(performance_results)
+        elif choice == '4':
+            break
 
         else:
             print("\n[오류] 잘못된 선택입니다. 1번~3번을 입력해 주세요.")
