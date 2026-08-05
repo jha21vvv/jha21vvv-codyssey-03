@@ -21,10 +21,16 @@ class MACSimulator:
             print("4. 종료")
             
             choice = input("메뉴 선택: ")
-            if choice == '1': self.mode_manual()
-            elif choice == '2': self.dh.analyze_json_report("results.json")
-            elif choice == '3': self.mode_performance()
-            elif choice == '4': break
+            if choice == '1':
+                self.mode_manual()
+            elif choice == '2':
+                self.mode_batch()
+            elif choice == '3':
+                self.mode_performance()
+            elif choice == '4':
+                break
+            else:
+                print("[오류] 올바른 메뉴를 선택하세요.")
 
     def mode_manual(self):
         user_p = self.dh.get_3x3_input()
@@ -38,7 +44,6 @@ class MACSimulator:
         
         print(f"\n[결과] 판정: {best_name} | 유사도: {self.engine.calculate_similarity(max_score):.1f}%")
         
-        # 결과 저장용 데이터 축적
         res_data = {
             "timestamp": str(datetime.datetime.now()),
             "predicted": best_name,
@@ -46,6 +51,56 @@ class MACSimulator:
         }
         self.history.append(res_data)
         self.dh.save_results("results.json", self.history)
+
+    def mode_batch(self, filepath="data.json"):
+        """Step 6: JSON 배치 파일 전체 분석"""
+        try:
+            filters, patterns = self.dh.load_and_validate(filepath)
+        except Exception as e:
+            print(f"[오류] 배치 분석 실패: {e}")
+            return
+
+        results = []
+        print("\n=== JSON 배치 분석 결과 ===")
+
+        for pkey, pvalue in patterns.items():
+            try:
+                matrix = pvalue["input"]
+                expected = self.dh.normalize_label(pvalue["expected"])
+
+                size = len(matrix)
+                fkey = f"size_{size}"
+
+                cross_filter = filters[fkey]["cross"]
+                x_filter = filters[fkey]["x"]
+
+                cross_score = self.engine.mac_2d(matrix, cross_filter)
+                x_score = self.engine.mac_2d(matrix, x_filter)
+
+                predicted = self.engine.judge(cross_score, x_score)
+                status = "PASS" if predicted == expected else "FAIL"
+
+                print(
+                    f"[{pkey}] "
+                    f"Cross점수={cross_score:.2f} | "
+                    f"X점수={x_score:.2f} | "
+                    f"판정={predicted} | "
+                    f"{status}"
+                )
+
+                results.append({
+                    "pattern": pkey,
+                    "cross_score": cross_score,
+                    "x_score": x_score,
+                    "predicted": predicted,
+                    "expected": expected,
+                    "status": status
+                })
+
+            except Exception as e:
+                print(f"[{pkey}] FAIL - {e}")
+
+        self.dh.save_results("results.json", results)
 
     def mode_performance(self):
         print("\n성능 테스트 중... 잠시만 기다려주세요.")

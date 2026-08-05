@@ -1,5 +1,19 @@
 class MACEngine:
     @staticmethod
+    def judge(score_a, score_b):
+        """두 점수를 비교해 승자 판정 (epsilon 오차 고려)"""
+        # 1) 두 점수 차이가 아주 작으면 (거의 같으면) 판정 불가
+        if abs(score_a - score_b) < 1e-9:
+            return "UNDECIDED"
+
+        # 2) A가 더 크면 CROSS
+        if score_a > score_b:
+            return "CROSS"
+
+        # 3) 그 외 (B가 더 크면) X
+        return "X"
+    
+    @staticmethod
     def mac_2d(matrix_a, matrix_b):
         """2차원 리스트 중첩 반복문 연산 (Step 2)"""
         result = 0.0
@@ -24,3 +38,4 @@ class MACEngine:
         """점수를 기반으로 유사도 백분율 계산 (Step 3)"""
         if max_score == 0: return 0
         return (score / max_score) * 100
+
