@@ -10,8 +10,10 @@ class MACSimulator:
         self.pm = PatternManager()
         self.dh = DataHandler()
         self.pa = PerformanceAnalyzer(self.engine)
+        #이게 의존성 주입으로 맥의 코드를  PerformanceAnalyzer에서 self.engine을 받기로 미리 약속한셈
         self.history = []
 
+# 런싯에 뜨는 메뉴
     def run(self):
         while True:
             print("\n=== MAC 시뮬레이터 로드맵 완성판 ===")
@@ -37,11 +39,14 @@ class MACSimulator:
         best_name, max_score = "", -1.0
         
         for name, std_p in self.pm.base_patterns.items():
+            #items: 딕셔너리에 들어있는 키(Key)와 값(Value)을 쌍으로 묶어서 한꺼번에 꺼내
             score = self.engine.mac_2d(user_p, std_p)
             if score > max_score:
                 max_score = score
                 best_name = name
-        
+            elif score == max_score:
+                max_score = score
+                best_name = "UNDECIDED"
         print(f"\n[결과] 판정: {best_name} | 유사도: {self.engine.calculate_similarity(max_score):.1f}%")
         
         res_data = {
@@ -64,12 +69,15 @@ class MACSimulator:
         print("\n=== JSON 배치 분석 결과 ===")
 
         for pkey, pvalue in patterns.items():
+            # pkey에는 size_3_1같은거, pvalue에는 "input":패턴 ,"expect": croos
             try:
                 matrix = pvalue["input"]
                 expected = self.dh.normalize_label(pvalue["expected"])
+                # 소문자 등으로 통일하는 과정
 
                 size = len(matrix)
                 fkey = f"size_{size}"
+                # 사이즈 값을 재서 fkey를 사이즈 값을 넣어서 정형화된 방식으로 필터를 찾아냄.
 
                 cross_filter = filters[fkey]["cross"]
                 x_filter = filters[fkey]["x"]

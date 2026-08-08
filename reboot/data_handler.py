@@ -85,6 +85,10 @@ class DataHandler:
         return data["filters"], data["patterns"]
 
     @staticmethod
+    # 클래스에 저장된 다른 변수를 읽을 필요가 없습니다.
+    # 클래스의 상태를 바꾸지도 않습니다.
+    # 그저 독립적인 도구(Utility) 같은 역할을 하죠.
+    # 이렇게 **"클래스와 논리적으로는 연관되어 있지만, 기능적으로는 독립적인 도구"**를 만들 때 @staticmethod를 사용합니다.
     def get_3x3_input():
         """사용자로부터 3x3 패턴 입력 받기"""
         print("\n[입력] 3x3 패턴을 입력하세요 (예: 0 1 0)")
@@ -93,9 +97,11 @@ class DataHandler:
             while True:
                 try:
                     row = [int(x) for x in input(f"{i+1}행: ").split()]
+                    # input(f"{i+1}행: ").split(): 인풋으로 받은 문자열을 스페이스 단위로 나누어 리스트로 만듬 "0 1 0"을 [0,1,0]으로 만듬
                     if len(row) != 3:
                         raise ValueError
                     pattern.append(row)
+                    #그 다음에 리스트를 통채로 에펜드로 패턴이라는 것에 넣어버리는 방식
                     break
                 except ValueError:
                     print("[오류] 숫자 3개를 정확히 입력해주세요.")
