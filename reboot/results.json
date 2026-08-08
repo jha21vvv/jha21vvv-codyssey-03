@@ -1,7 +1,98 @@
 [
     {
-        "timestamp": "2026-08-05 19:13:35.026473",
+        "pattern": "size_3_1",
+        "cross_score": 1.0,
+        "x_score": 5.0,
         "predicted": "X",
-        "score": 4.0
+        "expected": "X",
+        "status": "PASS"
+    },
+    {
+        "pattern": "size_3_2",
+        "cross_score": 1.0,
+        "x_score": 5.0,
+        "predicted": "X",
+        "expected": "X",
+        "status": "PASS"
+    },
+    {
+        "pattern": "size_3_3",
+        "cross_score": 5.0,
+        "x_score": 1.0,
+        "predicted": "CROSS",
+        "expected": "CROSS",
+        "status": "PASS"
+    },
+    {
+        "pattern": "size_5_1",
+        "cross_score": 1.0,
+        "x_score": 8.0,
+        "predicted": "X",
+        "expected": "X",
+        "status": "PASS"
+    },
+    {
+        "pattern": "size_5_2",
+        "cross_score": 9.0,
+        "x_score": 1.0,
+        "predicted": "CROSS",
+        "expected": "CROSS",
+        "status": "PASS"
+    },
+    {
+        "pattern": "size_5_3",
+        "cross_score": 9.0,
+        "x_score": 2.0,
+        "predicted": "CROSS",
+        "expected": "CROSS",
+        "status": "PASS"
+    },
+    {
+        "pattern": "size_13_1",
+        "cross_score": 25.0,
+        "x_score": 3.0,
+        "predicted": "CROSS",
+        "expected": "CROSS",
+        "status": "PASS"
+    },
+    {
+        "pattern": "size_13_2",
+        "cross_score": 25.0,
+        "x_score": 1.0,
+        "predicted": "CROSS",
+        "expected": "CROSS",
+        "status": "PASS"
+    },
+    {
+        "pattern": "size_13_3",
+        "cross_score": 25.0,
+        "x_score": 1.0,
+        "predicted": "CROSS",
+        "expected": "CROSS",
+        "status": "PASS"
+    },
+    {
+        "pattern": "size_25_1",
+        "cross_score": 48.0,
+        "x_score": 1.0,
+        "predicted": "CROSS",
+        "expected": "CROSS",
+        "status": "PASS"
+    },
+    {
+        "pattern": "size_25_2",
+        "cross_score": 2.0,
+        "x_score": 48.0,
+        "predicted": "X",
+        "expected": "X",
+        "status": "PASS"
+    },
+    {
+        "pattern": "size_25_3",
+        "cross_score": 48.0,
+        "x_score": 3.0,
+        "predicted": "CROSS",
+        "expected": "CROSS",
+        "status": "PASS"
     }
 ]
